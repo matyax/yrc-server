@@ -33,15 +33,27 @@ function setupSocketListeners(socket) {
     user.ircClient = ircClient;
 
     setupServerListeners(socket, ircClient);
+
+    console.log('Connected ' + socket.id);
   });
 
   socket.on('sendMessage', function (data) {
     user.ircClient.sendMessage(data);
   });
 
+  socket.on('join', function (data) {
+    user.ircClient.join(data.channel);
+  });
+
+  socket.on('leave', function (data) {
+    user.ircClient.leave(data.channel);
+  });
+
   socket.on('disconnect', function (data) {
     if (user.ircClient) {
       user.ircClient.disconnect();
+
+      console.log('Disconnected ' + socket.id);
     }
   });
 }
