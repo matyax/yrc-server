@@ -48,7 +48,6 @@ function setupSocketListeners(socket) {
 
 function setupServerListeners(socket, ircClient) {
   ircClient.on('receiveMessage', function (data) {
-    //io.sockets.socket(socket.id).emit('receiveMessage', data);
     socket.emit('receiveMessage', data);
   });
 }
