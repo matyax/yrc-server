@@ -19,34 +19,7 @@ function IrcClient() {
       channels: channels,
     });
 
-    /**
-     * Connection stablished
-     */
-    client.addListener('registered', function (message) {
-      trigger('connected', {});
-    });
-
-    /**
-     * Message received
-     */
-    client.addListener('message', function (from, to, message) {
-      var data = {
-        from: from,
-        to: to,
-        message: message
-      };
-
-      trigger('receiveMessage', data);
-    });
-
-    /**
-     * Error handler
-     */
-    client.addListener('error', function(message) {
-      console.log('error: ', message);
-
-      trigger('error', { message: message });
-    });
+    addServerListeners(client);
   };
 
   /**
@@ -63,6 +36,22 @@ function IrcClient() {
     if (data.channel) {
       client.say(data.channel, data.message);
     }
+  };
+
+  /**
+   * Join channel
+   * @param string channel #channel
+   */
+  this.join = function (channel) {
+      client.join(channel);
+  };
+
+  /**
+   * Leave channel
+   * @param string channel #channel
+   */
+  this.leave = function (channel) {
+      client.part(channel);
   };
 
   /**
@@ -91,6 +80,85 @@ function IrcClient() {
     });
 
     return true;
+  }
+
+  /**
+   * Trigger event
+   * @param function client IRC Client instance
+   */
+  function addServerListeners(client) {
+    /**
+     * Connection stablished
+     */
+    client.addListener('registered', function (message) {
+      trigger('connected', {});
+    });
+
+    /**
+     * Message received
+     */
+    client.addListener('message', function (from, to, message) {
+      var data = {
+        from: from,
+        to: to,
+        message: message
+      };
+
+      trigger('receiveMessage', data);
+    });
+
+    /**
+     * Connection stablished
+     */
+    client.addListener('names', function (channel, nicknames) {
+      trigger('users', { channel: channel, users: nicknames });
+    });
+
+    /**
+     * Connection stablished
+     */
+    client.addListener('join', function (channel, nickname) {
+      trigger('join', { channel: channel, nickname: nickname });
+    });
+
+    /**
+     * Connection stablished
+     */
+    client.addListener('part', function (channel, nickname) {
+      trigger('leave', { channel: channel, nickname: nickname });
+    });
+
+    /**
+     * Connection stablished
+     */
+    client.addListener('quit', function (nickname, reason, channels, message) {
+      trigger('disconnect', {
+        nickname: nickname,
+        reason: reason,
+        channels: channels,
+        message: message
+      });
+    });
+
+    /**
+     * Connection stablished
+     */
+    client.addListener('nick', function (channel, nickname) {
+      trigger('newNickname', {
+        oldNickname: oldnick,
+        newNickname: newnick,
+        channels: channels
+      });
+    });
+
+    /**
+     * Error handler
+     */
+    client.addListener('error', function(message) {
+      console.log('error: ', message);
+
+      trigger('error', { message: message });
+    });
   }
 }
 
