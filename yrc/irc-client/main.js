@@ -71,11 +71,13 @@ function IrcClient() {
    * @param object data Data to send to the callback
    */
   function trigger(event, data) {
-    if (! listeners.event) {
+    if (! listeners[event]) {
       return false;
     }
 
-    listeners.event.forEach(function (listener) {
+    console.log('Triggering ' + event);
+
+    listeners[event].forEach(function (listener) {
       listener(data);
     });
 
@@ -91,7 +93,7 @@ function IrcClient() {
      * Connection stablished
      */
     client.addListener('registered', function (message) {
-      trigger('connected', {});
+      trigger('connect', {});
     });
 
     /**

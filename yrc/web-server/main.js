@@ -59,6 +59,10 @@ function setupSocketListeners(socket) {
 }
 
 function setupServerListeners(socket, ircClient) {
+  ircClient.on('connect', function (data) {
+    socket.emit('connect', {});
+  });
+
   ircClient.on('receiveMessage', function (data) {
     socket.emit('receiveMessage', data);
   });
